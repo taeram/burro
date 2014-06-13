@@ -1,0 +1,24 @@
+/** Mark as Read **/
+.over18 .burro-mark-as-read,
+.burro-mark-as-read {
+    border: 0;
+    background-color: transparent;
+    color: #b3b3b3;
+    margin: 0;
+    margin-right: 4px;
+    padding: 0 3px 0 0
+}
+
+.burro-mark-as-read:hover {
+    color: #666;
+}
+
+/** Burro Style **/
+.burro-style .thing .title {
+    color: #555 !important;
+}
+
+.burro-style .thing .title:visited,
+.burro-style .thing.visited .title {
+    color: #aaa !important;
+}
