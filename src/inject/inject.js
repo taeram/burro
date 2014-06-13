@@ -48,39 +48,56 @@ function MarkAsRead() {
     };
 
     /**
-     * Triggered when we click a "mark as read" checkmark
+     * Convert a relative url to an absolute url
+     *
+     * @param string url The url
+     *
+     * @return string
      */
-    this.onClickCheckmark = function (event) {
-        var url = $(event.target).parent().find('a.title').first().attr('href');
+    this.relativeToAbsolute = function (url) {
         if (url.match(/^\//)) {
             url = window.location.origin + url;
         }
+        return url;
+    };
 
+    /**
+     * Triggered when we click a "mark as read" checkmark
+     *
+     * @param object event The event
+     */
+    this.onClickCheckmark = function (event) {
+        var url = $(event.target).parent().find('a.title').first().attr('href');
+        url = this.relativeToAbsolute(url);
         this.toggleRead(url);
     };
 
     /**
      * Toggle the read status for the selected url
+     *
+     * @param string url The url
      */
     this.toggleRead = function (url) {
         chrome.runtime.sendMessage({
             module: "mark_as_read",
             action: "toggle",
             params: {
-                url: url
+                url: this.relativeToAbsolute(url)
             }
         });
     };
 
     /**
      * Mark the selected url as read
+     *
+     * @param string url The url
      */
     this.markAsRead = function (url) {
         chrome.runtime.sendMessage({
             module: "mark_as_read",
             action: "add",
             params: {
-                url: url
+                url: this.relativeToAbsolute(url)
             }
         });
     };
