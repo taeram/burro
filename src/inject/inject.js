@@ -53,10 +53,7 @@ function MarkAsRead() {
     this.onClickCheckmark = function (event) {
         var url = $(event.target).parent().find('a.title').first().attr('href');
         if (url.match(/^\//)) {
-            url = window.location.href + url;
-            while (url.match(/\/\//)) {
-                url = url.replace(/\/\//, '/');
-            }
+            url = window.location.origin + url;
         }
 
         this.toggleRead(url);
