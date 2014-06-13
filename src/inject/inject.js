@@ -97,7 +97,6 @@ function BurroStyle () {
      * Setup the module
      */
     this.initialize = function () {
-        console.log("BURRO STYLE!!!")
         $('body').addClass('burro-style');
     };
 }
