@@ -30,3 +30,7 @@
     top: 0;
     width: 100%;
 }
+
+body.burro-fixed-header {
+    padding-top: 63px;
+}
