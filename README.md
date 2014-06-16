@@ -3,6 +3,8 @@ Burro
 
 A Google Chrome Extension for Reddit.
 
+Install it from the [Chrome Web Store](https://chrome.google.com/webstore/detail/burro/bcimcgagkdildnhcmjhljonhionglmcb).
+
 Features:
  * Mark all links on the current page as read
  * Mark individual links as read
