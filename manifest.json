@@ -2,7 +2,7 @@
   "name": "Burro",
   "version": "1.0.0",
   "manifest_version": 2,
-  "description": "A Google Chrome Extension for Reddit",
+  "description": "A Chrome Extension for Reddit",
   "homepage_url": "https://github.com/taeram/burro",
   "icons": {
     "16": "icons/icon16.png",
