@@ -4,6 +4,12 @@ Burro
 A Google Chrome Extension for Reddit.
 
 Features:
- * Mark all as read
+ * Mark all links on the current page as read
  * Mark individual links as read
+ * More relaxed visual style
+ * Fixed header, so it follows you as it scrolls
 
+Usage:
+* Install the Burro extension
+* On the Google Chrome Extensions page, find the Burro extension and click Options
+* On the Options page, click the features you want to enable
