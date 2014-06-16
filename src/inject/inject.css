@@ -13,7 +13,7 @@
     color: #666;
 }
 
-/** Burro Style **/
+/** Visual Style **/
 .burro-style .thing .title {
     color: #555 !important;
 }
@@ -21,4 +21,12 @@
 .burro-style .thing .title:visited,
 .burro-style .thing.visited .title {
     color: #aaa !important;
+}
+
+/** Fixed Header **/
+.burro-fixed-header #header {
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
 }

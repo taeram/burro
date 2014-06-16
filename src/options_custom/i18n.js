@@ -14,10 +14,13 @@ this.i18n = {
     },
 
     "mark_as_read": {
-        "en": "Mark as Read"
+        "en": "Mark as Read Button/Tab"
     },
     "burro_style": {
         "en": "Visual Theme"
+    },
+    "fixed_header": {
+        "en": "Fixed Header"
     },
     "features": {
         "en": "Features"

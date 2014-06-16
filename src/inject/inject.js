@@ -17,6 +17,12 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
                     var bs = new BurroStyle();
                     bs.initialize();
                 }
+
+                // Enable the fixed header?
+                if (localStorage['store.settings.burro_style'] == "true") {
+                    var fh = new FixedHeader();
+                    fh.initialize();
+                }
             });
         }
     }, 10);
@@ -106,11 +112,24 @@ function MarkAsRead() {
 /**
  * The Burro Style module
  */
-function BurroStyle () {
+function BurroStyle() {
     /**
      * Setup the module
      */
     this.initialize = function () {
         $('body').addClass('burro-style');
+    };
+}
+
+
+/**
+ * The Fixed Header module
+ */
+function FixedHeader() {
+    /**
+     * Setup the module
+     */
+    this.initialize = function () {
+        $('body').addClass('burro-fixed-header');
     };
 }
