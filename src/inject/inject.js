@@ -150,7 +150,7 @@ function ViewAllImages() {
     this.initialize = function () {
         $('.content .sitetable a.title').each(function (i, link) {
             var url = $(link).attr('href');
-            if (url.match(/i.imgur.com/)) {
+            if (this.isImage(url)) {
                 var thumbnail = $('<img src="' + url + '" class="burro-thumbnail" />');
                 $(link).prepend(thumbnail);
 
@@ -191,7 +191,6 @@ function ViewAllImages() {
                 $(thumbnail).on('mouseout', function (e) {
                     $('.burro-image').remove();
                 });
-
             }
         }.bind(this));
 
@@ -200,4 +199,11 @@ function ViewAllImages() {
             $('.burro-image').remove();
         });
     };
+
+    this.isImage = function (url) {
+        return url.match(/i.imgur.com/) ||
+            url.match(/\.gif$/i) ||
+            url.match(/\.jpg$/i) ||
+            url.match(/\.png$/i);
+    }
 }
