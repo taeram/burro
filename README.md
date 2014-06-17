@@ -10,6 +10,7 @@ Features:
  * Mark individual links as read
  * More relaxed visual style
  * Fixed header, so it follows you as it scrolls
+ * View all images
 
 Usage:
 * Install the Burro extension

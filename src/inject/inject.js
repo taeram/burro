@@ -23,6 +23,12 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
                     var fh = new FixedHeader();
                     fh.initialize();
                 }
+
+                // Enable view all images?
+                if (localStorage['store.settings.view_all_images'] == "true") {
+                    var via = new ViewAllImages();
+                    via.initialize();
+                }
             });
         }
     }, 10);
@@ -131,5 +137,67 @@ function FixedHeader() {
      */
     this.initialize = function () {
         $('body').addClass('burro-fixed-header');
+    };
+}
+
+/**
+ * The View All Images module
+ */
+function ViewAllImages() {
+    /**
+     * Setup the module
+     */
+    this.initialize = function () {
+        $('.content .sitetable a.title').each(function (i, link) {
+            var url = $(link).attr('href');
+            if (url.match(/i.imgur.com/)) {
+                var thumbnail = $('<img src="' + url + '" class="burro-thumbnail" />');
+                $(link).prepend(thumbnail);
+
+                $(thumbnail).on('mouseover', function (e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var top = (e.target.offsetTop + e.target.height);
+                        var left = (e.target.offsetLeft + e.target.width);
+                        var maxWidth = (window.innerWidth - left - 10);
+                        var maxHeight = (window.innerHeight - top - 10 + document.body.scrollTop);
+
+                        // Constrain the width
+                        if (this.width > maxWidth) {
+                            var widthRatio = this.width / maxWidth;
+                            this.width = maxWidth;
+                            this.height /= widthRatio;
+                        }
+
+                        // Constrain the height
+                        if (this.height > maxHeight) {
+                            var heightRatio = this.height / maxHeight;
+                            this.height = maxHeight;
+                            this.width /= heightRatio;
+                        }
+
+                        var img = $('<img src="' + url + '" class="burro-image" />').appendTo('body');
+                        img.css({
+                            position: "absolute",
+                            top: top,
+                            left: left,
+                            width: this.width,
+                            height: this.height
+                        });
+                    }
+                    img.src = url;
+                });
+
+                $(thumbnail).on('mouseout', function (e) {
+                    $('.burro-image').remove();
+                });
+
+            }
+        }.bind(this));
+
+        // Remove the image container
+        $('body').on('click', function (e) {
+            $('.burro-image').remove();
+        });
     };
 }

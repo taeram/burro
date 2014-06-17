@@ -22,6 +22,9 @@ this.i18n = {
     "fixed_header": {
         "en": "Fixed Header"
     },
+    "view_all_images": {
+        "en": "View All Images"
+    },
     "features": {
         "en": "Features"
     },

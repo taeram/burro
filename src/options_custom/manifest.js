@@ -13,6 +13,13 @@ this.manifest = {
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
+            "name": "view_all_images",
+            "type": "checkbox",
+            "label": i18n.get("view_all_images")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
             "name": "mark_as_read",
             "type": "checkbox",
             "label": i18n.get("mark_as_read")

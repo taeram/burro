@@ -34,3 +34,14 @@
 body.burro-fixed-header {
     padding-top: 63px;
 }
+
+/** View All Images **/
+.burro-thumbnail {
+    width: 20px;
+    height: 20px;
+    padding-right: 5px;
+}
+
+.burro-image {
+    border: 4px solid #ddd;
+}
