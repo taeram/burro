@@ -1,6 +1,6 @@
 // SAMPLE
 this.manifest = {
-    "name": "My Extension",
+    "name": "Burro",
     "icon": "icon.png",
     "settings": [
         {
@@ -13,10 +13,11 @@ this.manifest = {
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
-            "name": "view_all_images",
-            "type": "checkbox",
-            "label": i18n.get("view_all_images")
+            "name": "fixed_header_description",
+            "type": "description",
+            "text": i18n.get("fixed_header_description")
         },
+
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
@@ -27,6 +28,14 @@ this.manifest = {
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
+            "name": "mark_as_read_description",
+            "type": "description",
+            "text": i18n.get("mark_as_read_description")
+        },
+
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
             "name": "mark_as_read_on_next",
             "type": "checkbox",
             "label": i18n.get("mark_as_read_on_next")
@@ -34,9 +43,39 @@ this.manifest = {
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
+            "name": "mark_as_read_on_next_description",
+            "type": "description",
+            "text": i18n.get("mark_as_read_on_next_description")
+        },
+
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
+            "name": "view_all_images",
+            "type": "checkbox",
+            "label": i18n.get("view_all_images")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
+            "name": "view_all_images_description",
+            "type": "description",
+            "text": i18n.get("view_all_images_description")
+        },
+
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
             "name": "burro_style",
             "type": "checkbox",
             "label": i18n.get("burro_style")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
+            "name": "burro_style_description",
+            "type": "description",
+            "text": i18n.get("burro_style_description")
         }
     ]
 };

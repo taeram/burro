@@ -15,5 +15,5 @@ Features:
 
 Usage:
 * Install the Burro extension
-* On the Extensions page (chrome://extensions/), click Options under the Burro extension
+* On the Chrome Extensions page (chrome://extensions/), click Options under the Burro extension
 * On the Burro Options page, click the features you want to enable
