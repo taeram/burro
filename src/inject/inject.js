@@ -8,8 +8,10 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
             chrome.extension.sendMessage({module: "storage", action: "get"}, function (localStorage) {
                 // Initialize Mark as Read?
                 if (localStorage['store.settings.mark_as_read'] == "true") {
+                    var markAsReadOnNext = (localStorage['store.settings.mark_as_read_on_next'] == "true");
                     var mar = new MarkAsRead();
-                    mar.initialize();
+                    mar.initialize(markAsReadOnNext);
+
                 }
 
                 // Initialize Burro Style?
@@ -41,21 +43,30 @@ function MarkAsRead() {
     /**
      * Setup the module
      */
-    this.initialize = function () {
+    this.initialize = function (markAsReadOnNext) {
         // Add the "Mark All as Read" link
         var markAllAsReadLink = $('<li><a href="http://reddit.com">mark all as read</a></li>').appendTo('.tabmenu');
         $(markAllAsReadLink).on('click', function (e) {
             e.preventDefault();
-            $('.content .sitetable a.title').each(function (i, link) {
-                var url = $(link).attr('href');
-                this.markAsRead(url);
-            }.bind(this));
+            this.markAllRead(e);
         }.bind(this));
 
         // Add mark as read checkmarks to all individual links
         $('.content .sitetable a.title').each(function (i, link) {
             var checkmark = $('<button class="burro-mark-as-read">&#10004;</button>').prependTo($(link).parent());
             $(checkmark).on('click', this.onClickCheckmark.bind(this));
+        }.bind(this));
+
+        // Mark all as read on click "next" link at bottom of page
+        if (markAsReadOnNext) {
+            $('.nav-buttons a[rel~="next"]').first().on('click', this.markAllRead.bind(this));
+        }
+    };
+
+    this.markAllRead = function (e) {
+        $('.content .sitetable a.title').each(function (i, link) {
+            var url = $(link).attr('href');
+            this.markAsRead(url);
         }.bind(this));
     };
 

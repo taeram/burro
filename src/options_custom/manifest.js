@@ -27,6 +27,13 @@ this.manifest = {
         {
             "tab": i18n.get("information"),
             "group": i18n.get("features"),
+            "name": "mark_as_read_on_next",
+            "type": "checkbox",
+            "label": i18n.get("mark_as_read_on_next")
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
             "name": "burro_style",
             "type": "checkbox",
             "label": i18n.get("burro_style")

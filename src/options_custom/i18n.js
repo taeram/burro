@@ -16,6 +16,9 @@ this.i18n = {
     "mark_as_read": {
         "en": "Mark as Read Button/Tab"
     },
+    "mark_as_read_on_next": {
+        "en": "Auto Mark as Read on Next page"
+    },
     "burro_style": {
         "en": "Visual Theme"
     },
