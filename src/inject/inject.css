@@ -43,5 +43,6 @@ body.burro-fixed-header {
 }
 
 .burro-image {
+    background-color: white;
     border: 4px solid #ddd;
 }
