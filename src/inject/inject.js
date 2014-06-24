@@ -176,7 +176,7 @@ function ViewAllImages() {
                         var top = (e.target.offsetTop + e.target.height);
                         var left = (e.target.offsetLeft + e.target.width);
                         var maxWidth = (window.innerWidth - left - 10);
-                        var maxHeight = (window.innerHeight - top - 10 + document.body.scrollTop);
+                        var maxHeight = (window.innerHeight - top - 30 + document.body.scrollTop);
 
                         // Constrain the width
                         if (this.width > maxWidth) {
@@ -202,7 +202,7 @@ function ViewAllImages() {
                             width: this.width,
                             height: this.height
                         });
-                    }.bind(this);
+                    }
 
                     img.src = media.item.getThumbnailUrl(url);
                 }.bind(this));
