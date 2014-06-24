@@ -267,15 +267,6 @@ function ViewAllImages() {
             }
 
             /**
-             * Get the url
-             *
-             * @return string
-             */
-            this.getUrl = function () {
-                return this.url;
-            }
-
-            /**
              * Get the thumbnail url
              *
              * @return string
@@ -290,7 +281,7 @@ function ViewAllImages() {
              * @return string
              */
             this.getHtml = function () {
-                return '<img src="' + this.getUrl() + '" />';
+                return '<img src="' + this.url + '" />';
             }
 
             /**
@@ -325,15 +316,6 @@ function ViewAllImages() {
             }
 
             /**
-             * Get the url
-             *
-             * @return string
-             */
-            this.getUrl = function () {
-                return this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm');
-            }
-
-            /**
              * Get the thumbnail url
              *
              * @return string
@@ -348,8 +330,9 @@ function ViewAllImages() {
              * @return string
              */
             this.getHtml = function () {
-                return '<video autoplay loop muted>' +
-                            '<source src="' + this.getUrl() + '" type="video/webm">' +
+                return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '">' +
+                            '<source src="' + this.url.replace(/\/\//, '//fat.').replace(/$/, '.webm') + '" type="video/webm">' +
+                            '<source src="' + this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm') + '" type="video/webm">' +
                         '</video>';
             }
 
@@ -372,7 +355,7 @@ function ViewAllImages() {
              * @return string
              */
             this.sanitizeUrl = function (url) {
-                return url.replace(/#/, '').replace(/www\./, '');
+                return url.replace(/#.*$/, '').replace(/www\./, '');
             }
         }
     }
