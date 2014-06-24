@@ -155,19 +155,24 @@ function FixedHeader() {
  * The View All Images module
  */
 function ViewAllImages() {
+
     /**
      * Setup the module
      */
     this.initialize = function () {
         $('.content .sitetable a.title').each(function (i, link) {
             var url = $(link).attr('href');
-            if (this.isImage(url)) {
-                var thumbnail = $('<img src="' + url + '" class="burro-thumbnail" />');
+            var media = new this.Media();
+            if (media.initialize(url)) {
+                var thumbnail = $('<img src="' + media.item.getThumbnailUrl() + '" class="burro-thumbnail" />');
                 $(link).prepend(thumbnail);
 
-                $(thumbnail).on('mouseover', function (e) {
+                $(thumbnail).on('mouseover',  function (e) {
                     var img = new Image();
+
+                    // After the thumbnail has loaded, grab its width/height and set the full sized popver using that width/height
                     img.onload = function() {
+                        // What is the position of the thumbnail on the page
                         var top = (e.target.offsetTop + e.target.height);
                         var left = (e.target.offsetLeft + e.target.width);
                         var maxWidth = (window.innerWidth - left - 10);
@@ -187,34 +192,188 @@ function ViewAllImages() {
                             this.width /= heightRatio;
                         }
 
-                        var img = $('<img src="' + url + '" class="burro-image" />').appendTo('body');
-                        img.css({
+                        // Construct the DOM object/HTML for the popover
+                        var popover = $(media.item.getHtml()).appendTo('body');
+                        popover.addClass('burro-image');
+                        popover.css({
                             position: "absolute",
                             top: top,
                             left: left,
                             width: this.width,
                             height: this.height
                         });
-                    }
-                    img.src = url;
-                });
+                    }.bind(this);
 
+                    img.src = media.item.getThumbnailUrl(url);
+                }.bind(this));
+
+                // Remove the full sized image/video when we mouseout
                 $(thumbnail).on('mouseout', function (e) {
                     $('.burro-image').remove();
                 });
             }
         }.bind(this));
 
-        // Remove the image container
+        // Remove the full sized image/video when we click anywhere on the page
         $('body').on('click', function (e) {
             $('.burro-image').remove();
         });
     };
 
-    this.isImage = function (url) {
-        return url.match(/i.imgur.com/) ||
-            url.match(/\.gif$/i) ||
-            url.match(/\.jpg$/i) ||
-            url.match(/\.png$/i);
+    /**
+     * The Media class
+     */
+    this.Media = function() {
+
+        var item = null;
+
+        /**
+         * Construct the class
+         *
+         * @param string url The url
+         *
+         * @return boolean
+         */
+        this.initialize = function (url) {
+            var img = new this.Image();
+            if (img.isValid(url)) {
+                img.initialize(url);
+                this.item = img;
+                return true;
+            }
+
+            var vid = new this.Video();
+            if (vid.isValid(url)) {
+                vid.initialize(url);
+                this.item = vid;
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * The Image class
+         */
+        this.Image = function() {
+
+            var url = null;
+
+            /**
+             * Construct the class
+             */
+            this.initialize = function(url) {
+                this.url = url;
+            }
+
+            /**
+             * Get the url
+             *
+             * @return string
+             */
+            this.getUrl = function () {
+                return this.url;
+            }
+
+            /**
+             * Get the thumbnail url
+             *
+             * @return string
+             */
+            this.getThumbnailUrl = function () {
+                return this.url;
+            }
+
+            /**
+             * Get the HTML
+             *
+             * @return string
+             */
+            this.getHtml = function () {
+                return '<img src="' + this.getUrl() + '" />';
+            }
+
+            /**
+             * Does the url point to a valid image?
+             *
+             * @param string url The url
+             *
+             * @return boolean
+             */
+            this.isValid = function (url) {
+                return (
+                    url.match(/i.imgur.com/) ||
+                    url.match(/\.gif$/i) ||
+                    url.match(/\.jpg$/i) ||
+                    url.match(/\.png$/i)
+                );
+            }
+        }
+
+        /**
+         * The Video class
+         */
+        this.Video = function() {
+
+            var url = null;
+
+            /**
+             * Construct the class
+             */
+            this.initialize = function(url) {
+                this.url = this.sanitizeUrl(url);
+            }
+
+            /**
+             * Get the url
+             *
+             * @return string
+             */
+            this.getUrl = function () {
+                return this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm');
+            }
+
+            /**
+             * Get the thumbnail url
+             *
+             * @return string
+             */
+            this.getThumbnailUrl = function () {
+                return this.url.replace(/\/\//, '//thumbs.').replace(/$/, '-poster.jpg');
+            }
+
+            /**
+             * Get the HTML
+             *
+             * @return string
+             */
+            this.getHtml = function () {
+                return '<video autoplay loop muted>' +
+                            '<source src="' + this.getUrl() + '" type="video/webm">' +
+                        '</video>';
+            }
+
+            /**
+             * Does the url point to a valid video?
+             *
+             * @param string url The url
+             *
+             * @return boolean
+             */
+            this.isValid = function (url) {
+                return url.match(/gfycat.com/i);
+            }
+
+            /**
+             * Sanitize a url
+             *
+             * @param string url The url
+             *
+             * @return string
+             */
+            this.sanitizeUrl = function (url) {
+                return url.replace(/#/, '').replace(/www\./, '');
+            }
+        }
     }
 }
