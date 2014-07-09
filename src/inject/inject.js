@@ -263,6 +263,12 @@ function ViewAllImages() {
              * Construct the class
              */
             this.initialize = function(url) {
+                // Modify single photo "albums" to point directly to the image url
+                if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
+                    url = url.replace(/imgur.com/, 'i.imgur.com')
+                             .replace(/$/, '.jpg');
+                }
+
                 this.url = url;
             }
 
@@ -293,7 +299,11 @@ function ViewAllImages() {
              */
             this.isValid = function (url) {
                 return (
+                    // Direct link to an imgur url
                     url.match(/i.imgur.com/) ||
+
+                    // Link to a single imgur image, not an imgur gallery
+                    url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  ||
                     url.match(/\.gif$/i) ||
                     url.match(/\.jpg$/i) ||
                     url.match(/\.png$/i)
