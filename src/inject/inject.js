@@ -46,7 +46,7 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
  * The Mark as Read module
  */
 function MarkAsRead() {
-    
+
     /**
      * Setup the module
      */
@@ -250,14 +250,20 @@ function ViewAllImages() {
         this.initialize = function (url) {
             var img = new this.Image();
             if (img.isValid(url)) {
-                img.initialize(url);
+                if (!img.initialize(url)) {
+                    return false;
+                }
+
                 this.item = img;
                 return true;
             }
 
             var vid = new this.Video();
             if (vid.isValid(url)) {
-                vid.initialize(url);
+                if (!vid.initialize(url)) {
+                    return false;
+                }
+
                 this.item = vid;
                 return true;
             }
@@ -278,11 +284,58 @@ function ViewAllImages() {
             this.initialize = function(url) {
                 // Modify single photo "albums" to point directly to the image url
                 if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
-                    url = url.replace(/imgur.com/, 'i.imgur.com')
-                             .replace(/$/, '.jpg');
+                    this.url = url.replace(/imgur.com/, 'i.imgur.com')
+                                  .replace(/$/, '.jpg');
                 }
 
-                this.url = url;
+                // Modify YouTube urls to point to the high quality thumbnail url
+                if (url.match(/youtube.com/) || url.match(/youtu.be/)) {
+                    var id = null;
+                    if (url.match(/youtube.com/)) {
+                        if (url.match('attribution_link')) {
+                            url = url.replace(/%3D/g, '=');
+                        }
+
+                        matches = url.match(/v=([_\-0-9a-zA-Z]+)/)
+                        if (matches) {
+                            id = matches[1];
+                        }
+                    } 
+
+                    if (url.match(/youtu.be/)) {
+                        matches = url.match(/youtu.be\/([_\-0-9a-zA-Z]+)/)
+                        if (matches) {
+                            id = matches[1];
+                        }
+                    }
+
+                    if (id === null || id == '') {
+                        return false;
+                    }
+
+                    this.url = "http://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+                }
+
+                // Modify Vimeo urls to point to the large thumbnail url
+                if (url.match(/vimeo.com/)) {
+                    var id = null;
+                    matches = url.match(/vimeo.com\/(.+)/)
+                    if (matches) {
+                        id = matches[1];
+                    }
+                    console.log('before')
+
+                    // Get the thumbnail URL from Vimeo's API
+                    $.ajax({
+                        url: "http://vimeo.com/api/v2/video/" + id + ".xml",
+                        async: false,
+                        success: function (xml) {
+                            this.url = $(xml).find('thumbnail_large').text();
+                        }.bind(this)
+                    });
+                }
+
+                return true;
             }
 
             /**
@@ -317,6 +370,13 @@ function ViewAllImages() {
 
                     // Link to a single imgur image, not an imgur gallery
                     url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  ||
+
+                    // Youtube
+                    url.match(/youtube.com/) || url.match(/youtu.be/) ||
+
+                    // Vimeo
+                    url.match(/vimeo.com/) ||
+
                     url.match(/\.gif$/i) ||
                     url.match(/\.jpg$/i) ||
                     url.match(/\.png$/i)
@@ -336,6 +396,7 @@ function ViewAllImages() {
              */
             this.initialize = function(url) {
                 this.url = this.sanitizeUrl(url);
+                return true;
             }
 
             /**
