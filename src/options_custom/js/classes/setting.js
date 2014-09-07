@@ -253,7 +253,7 @@
 
             this.label = new Element("label", {
                 "class": "setting label checkbox",
-                "for": this.element.get("id")
+                "for": this.params.id || this.element.get("id")
             });
         },
 
