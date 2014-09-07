@@ -1,3 +1,8 @@
+// Open Options after installation
+chrome.runtime.onInstalled.addListener(function (object) {
+    chrome.tabs.create({url: "src/options_custom/index.html"}, function (tab) {
+    });
+});
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.module == 'storage' && request.action == 'get') {
