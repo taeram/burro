@@ -12,6 +12,12 @@ Features:
  * More relaxed visual style
  * Fixed header, so it follows as you scroll the page
  * View all images as thumbnails, and mouseover for the full sized image
+   - Optionally, hide all NSFW thumbnails
+   - Currently supports direct links to images as well as:
+      - imgur.com 
+      - gfycat.com
+      - youtube.com / youtu.be
+      - vimeo.com
 
 Usage:
 * Install the Burro extension
