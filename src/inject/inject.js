@@ -286,6 +286,7 @@ function ViewAllImages() {
                 if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
                     this.url = url.replace(/imgur.com/, 'i.imgur.com')
                                   .replace(/$/, '.jpg');
+                    return true;
                 }
 
                 // Modify YouTube urls to point to the high quality thumbnail url
@@ -314,6 +315,7 @@ function ViewAllImages() {
                     }
 
                     this.url = "http://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+                    return true;
                 }
 
                 // Modify Vimeo urls to point to the large thumbnail url
@@ -323,7 +325,6 @@ function ViewAllImages() {
                     if (matches) {
                         id = matches[1];
                     }
-                    console.log('before')
 
                     // Get the thumbnail URL from Vimeo's API
                     $.ajax({
@@ -333,8 +334,10 @@ function ViewAllImages() {
                             this.url = $(xml).find('thumbnail_large').text();
                         }.bind(this)
                     });
+                    return true;
                 }
 
+                this.url = url;
                 return true;
             }
 
