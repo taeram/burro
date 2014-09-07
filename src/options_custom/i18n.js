@@ -48,6 +48,13 @@ this.i18n = {
         "en": "View all images as thumbnails, and mouseover for the full sized image"
     },
 
+    "view_all_images_hide_nsfw": {
+        "en": "Hide NSFW images"
+    },
+    "view_all_images_hide_nsfw_description": {
+        "en": "View all images as thumbnails, except for NSFW images"
+    },
+
     "features": {
         "en": "Features"
     },

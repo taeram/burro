@@ -28,8 +28,14 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
 
                 // Enable view all images?
                 if (localStorage['store.settings.view_all_images'] == "true") {
+                    // Enable hide nsfw images?
+                    var hideNsfw = false;
+                    if (localStorage['store.settings.view_all_images_hide_nsfw'] == "true") {
+                        hideNsfw = true;
+                    }
+
                     var via = new ViewAllImages();
-                    via.initialize();
+                    via.initialize(hideNsfw);
                 }
             });
         }
@@ -40,6 +46,7 @@ chrome.extension.sendMessage({module: "page", action: "is_loaded"}, function(res
  * The Mark as Read module
  */
 function MarkAsRead() {
+    
     /**
      * Setup the module
      */
@@ -159,8 +166,14 @@ function ViewAllImages() {
     /**
      * Setup the module
      */
-    this.initialize = function () {
+    this.initialize = function (hideNsfw) {
         $('.content .sitetable a.title').each(function (i, link) {
+            // Hide NSFW links?
+            var isNsfw = ($(link).parents('.entry').find('.nsfw-stamp').length > 0);
+            if (isNsfw && hideNsfw) {
+                return;
+            }
+
             var url = $(link).attr('href');
             var media = new this.Media();
             if (media.initialize(url)) {

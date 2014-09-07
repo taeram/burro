@@ -53,7 +53,8 @@ this.manifest = {
             "group": i18n.get("features"),
             "name": "view_all_images",
             "type": "checkbox",
-            "label": i18n.get("view_all_images")
+            "label": i18n.get("view_all_images"),
+            "id": "view_all_images"
         },
         {
             "tab": i18n.get("information"),
@@ -61,6 +62,22 @@ this.manifest = {
             "name": "view_all_images_description",
             "type": "description",
             "text": i18n.get("view_all_images_description")
+        },
+
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
+            "name": "view_all_images_hide_nsfw",
+            "type": "checkbox",
+            "label": i18n.get("view_all_images_hide_nsfw"),
+            "id": "view_all_images_hide_nsfw"
+        },
+        {
+            "tab": i18n.get("information"),
+            "group": i18n.get("features"),
+            "name": "view_all_images_hide_nsfw_description",
+            "type": "description",
+            "text": i18n.get("view_all_images_hide_nsfw_description")
         },
 
         {
