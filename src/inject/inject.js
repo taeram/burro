@@ -419,6 +419,7 @@ function ViewAllImages() {
             this.getHtml = function () {
                 return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '">' +
                             '<source src="' + this.url.replace(/\/\//, '//fat.').replace(/$/, '.webm') + '" type="video/webm">' +
+                            '<source src="' + this.url.replace(/\/\//, '//giant.').replace(/$/, '.webm') + '" type="video/webm">' +
                             '<source src="' + this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm') + '" type="video/webm">' +
                         '</video>';
             }
