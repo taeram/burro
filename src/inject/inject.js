@@ -276,6 +276,11 @@ function ViewAllImages() {
                     return true;
                 }
 
+                // Modify gif's to load the gifv instead
+                if (url.match(/i.imgur.com/) && url.match(/\.gif$/)) {
+                    this.originalUrl += 'v';
+                }
+
                 // Modify images to point to the small, static thumbnail
                 if (url.match(/i.imgur.com/) && !url.match(/b\.jpg$/)) {
                     this.thumbUrl = url.replace(/\.\w+$/, 'b.jpg');
