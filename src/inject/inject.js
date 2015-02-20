@@ -188,32 +188,15 @@ function ViewAllImages() {
                         // What is the position of the thumbnail on the page
                         var top = (e.target.offsetTop + e.target.height);
                         var left = (e.target.offsetLeft + e.target.width);
-                        var maxWidth = (window.innerWidth - left - 10);
-                        var maxHeight = (window.innerHeight - top - 30 + document.body.scrollTop);
-
-                        // Constrain the width
-                        if (this.width > maxWidth) {
-                            var widthRatio = this.width / maxWidth;
-                            this.width = maxWidth;
-                            this.height /= widthRatio;
-                        }
-
-                        // Constrain the height
-                        if (this.height > maxHeight) {
-                            var heightRatio = this.height / maxHeight;
-                            this.height = maxHeight;
-                            this.width /= heightRatio;
-                        }
+                        var maxWidth = (window.innerWidth - left - 80);
+                        var maxHeight = (window.innerHeight + document.body.scrollTop - top - 70);
 
                         // Construct the DOM object/HTML for the popover
-                        var popover = $(media.item.getHtml()).appendTo('body');
-                        popover.addClass('burro-image');
+                        var popoverHtml = '<div class="burro-popover"><div class="burro-popover-content">' + media.item.getPopoverHtml(maxWidth, maxHeight) + '</div></div>';
+                        var popover = $(popoverHtml).appendTo('body');
                         popover.css({
-                            position: "absolute",
                             top: top,
-                            left: left,
-                            width: this.width,
-                            height: this.height
+                            left: left
                         });
                     }
 
@@ -222,7 +205,7 @@ function ViewAllImages() {
 
                 // Remove the full sized image/video when we mouseout
                 $(thumbnail).on('mouseout', function (e) {
-                    $('.burro-image').remove();
+                    $('.burro-popover').remove();
                 });
             }
         }.bind(this));
@@ -276,16 +259,26 @@ function ViewAllImages() {
          */
         this.Image = function() {
 
-            var url = null;
+            var thumbUrl = null;
+            var originalUrl = null;
 
             /**
              * Construct the class
              */
             this.initialize = function(url) {
+                // Default
+                this.thumbUrl = this.originalUrl = url;
+
                 // Modify single photo "albums" to point directly to the image url
                 if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
-                    this.url = url.replace(/imgur.com/, 'i.imgur.com')
-                                  .replace(/$/, '.jpg');
+                    this.originalUrl = url.replace(/imgur.com/, 'i.imgur.com').replace(/$/, '.jpg');
+                    this.thumbUrl = url.replace(/imgur.com/, 'i.imgur.com').replace(/$/, 'b.jpg');
+                    return true;
+                }
+
+                // Modify images to point to the small, static thumbnail
+                if (url.match(/i.imgur.com/) && !url.match(/b\.jpg$/)) {
+                    this.thumbUrl = url.replace(/\.\w+$/, 'b.jpg');
                     return true;
                 }
 
@@ -301,7 +294,7 @@ function ViewAllImages() {
                         if (matches) {
                             id = matches[1];
                         }
-                    } 
+                    }
 
                     if (url.match(/youtu.be/)) {
                         matches = url.match(/youtu.be\/([_\-0-9a-zA-Z]+)/)
@@ -314,7 +307,7 @@ function ViewAllImages() {
                         return false;
                     }
 
-                    this.url = "http://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+                    this.thumbUrl = this.originalUrl = "http://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
                     return true;
                 }
 
@@ -331,13 +324,12 @@ function ViewAllImages() {
                         url: "http://vimeo.com/api/v2/video/" + id + ".xml",
                         async: false,
                         success: function (xml) {
-                            this.url = $(xml).find('thumbnail_large').text();
+                            this.thumbUrl = this.originalUrl = $(xml).find('thumbnail_large').text();
                         }.bind(this)
                     });
                     return true;
                 }
 
-                this.url = url;
                 return true;
             }
 
@@ -347,7 +339,7 @@ function ViewAllImages() {
              * @return string
              */
             this.getThumbnailUrl = function () {
-                return this.url;
+                return this.thumbUrl;
             }
 
             /**
@@ -355,8 +347,15 @@ function ViewAllImages() {
              *
              * @return string
              */
-            this.getHtml = function () {
-                return '<img src="' + this.url + '" />';
+            this.getPopoverHtml = function (width, height) {
+                if (this.originalUrl.match(/i.imgur.com/) && this.originalUrl.match(/\.gifv$/)) {
+                    var videoUrl = this.originalUrl.replace(/\.gifv$/, '.mp4');
+                    return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '" style="max-width: ' + width + 'px; max-height: ' + height + 'px">' +
+                                '<source src="' + videoUrl + '" type="video/mp4">' +
+                            '</video>';
+                }
+
+                return '<img src="' + this.originalUrl + '" style="max-width: ' + width + 'px; max-height: ' + height + 'px" />';
             }
 
             /**
@@ -416,8 +415,8 @@ function ViewAllImages() {
              *
              * @return string
              */
-            this.getHtml = function () {
-                return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '">' +
+            this.getPopoverHtml = function (width, height) {
+                return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '" style="width: ' + width + 'px; height: ' + height + 'px">' +
                             '<source src="' + this.url.replace(/\/\//, '//fat.').replace(/$/, '.webm') + '" type="video/webm">' +
                             '<source src="' + this.url.replace(/\/\//, '//giant.').replace(/$/, '.webm') + '" type="video/webm">' +
                             '<source src="' + this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm') + '" type="video/webm">' +
