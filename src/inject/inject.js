@@ -163,6 +163,9 @@ function FixedHeader() {
  */
 function ViewAllImages() {
 
+    var SOURCE_GFYCAT = 'gfycat';
+    var SOURCE_YOUTUBE = 'youtube';
+
     /**
      * Setup the module
      */
@@ -266,53 +269,34 @@ function ViewAllImages() {
              * Construct the class
              */
             this.initialize = function(url) {
-                // Default
-                this.thumbUrl = this.originalUrl = url;
-
-                // Modify single photo "albums" to point directly to the image url
+                // Modify imgur photo albums with only a single photo to point directly to the image url
                 if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
-                    this.originalUrl = url.replace(/imgur.com/, 'i.imgur.com').replace(/$/, '.jpg');
-                    this.thumbUrl = url.replace(/imgur.com/, 'i.imgur.com').replace(/$/, 'b.jpg');
-                    return true;
+                    url = url.replace(/imgur.com/, 'i.imgur.com');
                 }
 
-                // Modify gif's to load the gifv instead
-                if (url.match(/i.imgur.com/) && url.match(/\.gif$/)) {
-                    this.originalUrl += 'v';
-                }
-
-                // Modify images to point to the small, static thumbnail
-                if (url.match(/i.imgur.com/) && !url.match(/b\.jpg$/)) {
-                    this.thumbUrl = url.replace(/\.\w+$/, 'b.jpg');
-                    return true;
-                }
-
-                // Modify YouTube urls to point to the high quality thumbnail url
-                if (url.match(/youtube.com/) || url.match(/youtu.be/)) {
-                    var id = null;
-                    if (url.match(/youtube.com/)) {
-                        if (url.match('attribution_link')) {
-                            url = url.replace(/%3D/g, '=');
-                        }
-
-                        matches = url.match(/v=([_\-0-9a-zA-Z]+)/)
-                        if (matches) {
-                            id = matches[1];
-                        }
+                // Modify imgur urls
+                if (url.match(/i.imgur.com/)) {
+                    // Always load it over HTTPS
+                    if (!url.match(/^https:/)) {
+                        url = url.replace(/^http:/, 'https:');
                     }
 
-                    if (url.match(/youtu.be/)) {
-                        matches = url.match(/youtu.be\/([_\-0-9a-zA-Z]+)/)
-                        if (matches) {
-                            id = matches[1];
-                        }
+                    // Handle images without an extension
+                    if (!url.match(/\.[a-z]{3,}$/)) {
+                        url += '.jpg';
                     }
 
-                    if (id === null || id == '') {
-                        return false;
+                    // Load the gifv instead of the slower gif
+                    if (url.match(/\.gif$/)) {
+                        url += 'v';
                     }
 
-                    this.thumbUrl = this.originalUrl = "http://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+                    this.thumbUrl = this.originalUrl = url;
+
+                    // Modify thumbnail images to point to the small, static thumbnail
+                    if (!this.thumbUrl.match(/b\.jpg$/)) {
+                        this.thumbUrl = this.thumbUrl.replace(/\.\w+$/, 'b.jpg');
+                    }  
                     return true;
                 }
 
@@ -332,9 +316,12 @@ function ViewAllImages() {
                             this.thumbUrl = this.originalUrl = $(xml).find('thumbnail_large').text();
                         }.bind(this)
                     });
+
                     return true;
                 }
 
+                // Default
+                this.thumbUrl = this.originalUrl = url;
                 return true;
             }
 
@@ -378,9 +365,6 @@ function ViewAllImages() {
                     // Link to a single imgur image, not an imgur gallery
                     url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  ||
 
-                    // Youtube
-                    url.match(/youtube.com/) || url.match(/youtu.be/) ||
-
                     // Vimeo
                     url.match(/vimeo.com/) ||
 
@@ -395,14 +379,77 @@ function ViewAllImages() {
          * The Video class
          */
         this.Video = function() {
+            // The video source
+            var source = null;
 
+            // The video id
+            var id = null;
+
+            // The video url
             var url = null;
+
+            // The popover html
+            var popoverHtml = null;
 
             /**
              * Construct the class
              */
             this.initialize = function(url) {
                 this.url = this.sanitizeUrl(url);
+
+                // Load gfycat urls over HTTPS
+                if (this.url.match(/gfycat.com/i)) {
+                    this.source = SOURCE_GFYCAT;
+                    if (!this.url.match(/^https:/)) {
+                        this.url = this.url.replace(/^http:/, 'https:');
+                    }
+                }
+
+                // Modify YouTube urls to point to the high quality thumbnail url
+                if (this.url.match(/youtube.com/i) || this.url.match(/youtu.be/i)) {
+                    this.source = SOURCE_YOUTUBE;
+
+                    if (this.url.match(/youtube.com/)) {
+                        if (this.url.match('attribution_link')) {
+                            this.url = this.url.replace(/%3D/g, '=');
+                        }
+
+                        matches = this.url.match(/v=([_\-0-9a-zA-Z]+)/)
+                        if (matches) {
+                            this.id = matches[1];
+                        }
+                    }
+
+                    if (this.url.match(/youtu.be/)) {
+                        matches = this.url.match(/youtu.be\/([_\-0-9a-zA-Z]+)/)
+                        if (matches) {
+                            this.id = matches[1];
+                        }
+                    }
+
+                    if (this.id === null || this.id == '') {
+                        return false;
+                    }
+
+                    // Preload the video dimensions
+                    $.get('https://www.youtube.com/oembed',
+                        {
+                            'format': 'json',
+                            'url': this.url
+                        }, function (result) {
+                            var html = result.html;
+
+                            // Ensure it's served over HTTPS
+                            html = html.replace(/src="http:/, 'src="https:')
+
+                            // Autoplay
+                            html = html.replace(/feature=oembed/, 'autoplay=1');
+
+                            this.popoverHtml = html;
+                        }.bind(this)
+                    );
+                }
+
                 return true;
             }
 
@@ -412,7 +459,14 @@ function ViewAllImages() {
              * @return string
              */
             this.getThumbnailUrl = function () {
-                return this.url.replace(/\/\//, '//thumbs.').replace(/$/, '-poster.jpg');
+                if (this.source == SOURCE_GFYCAT) {
+                    return this.url.replace(/\/\//, '//thumbs.').replace(/$/, '-poster.jpg');
+                }
+
+                if (this.source == SOURCE_YOUTUBE) {
+                    return "https://i.ytimg.com/vi/" + this.id + "/hqdefault.jpg";
+                }
+
             }
 
             /**
@@ -421,11 +475,15 @@ function ViewAllImages() {
              * @return string
              */
             this.getPopoverHtml = function (width, height) {
-                return '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '" style="width: ' + width + 'px; height: ' + height + 'px">' +
-                            '<source src="' + this.url.replace(/\/\//, '//fat.').replace(/$/, '.webm') + '" type="video/webm">' +
-                            '<source src="' + this.url.replace(/\/\//, '//giant.').replace(/$/, '.webm') + '" type="video/webm">' +
-                            '<source src="' + this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm') + '" type="video/webm">' +
-                        '</video>';
+                if (this.source == SOURCE_GFYCAT) {
+                    this.popoverHtml = '<video autoplay loop muted poster="' + this.getThumbnailUrl() + '" style="max-width: ' + width + 'px; max-height: ' + height + 'px">' +
+                                            '<source src="' + this.url.replace(/\/\//, '//fat.').replace(/$/, '.webm') + '" type="video/webm">' +
+                                            '<source src="' + this.url.replace(/\/\//, '//giant.').replace(/$/, '.webm') + '" type="video/webm">' +
+                                            '<source src="' + this.url.replace(/\/\//, '//zippy.').replace(/$/, '.webm') + '" type="video/webm">' +
+                                        '</video>';
+                }
+
+                return this.popoverHtml;
             }
 
             /**
@@ -436,7 +494,13 @@ function ViewAllImages() {
              * @return boolean
              */
             this.isValid = function (url) {
-                return url.match(/gfycat.com/i);
+                return (
+                    // Gfycat
+                    url.match(/gfycat.com/i) ||
+
+                    // Youtube
+                    url.match(/youtube.com/i) || url.match(/youtu.be/i)
+                );
             }
 
             /**

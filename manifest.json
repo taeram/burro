@@ -1,6 +1,6 @@
 {
   "name": "Burro",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "manifest_version": 2,
   "description": "A Chrome Extension for Reddit",
   "homepage_url": "https://github.com/taeram/burro",
@@ -22,7 +22,8 @@
     "http://reddit.com/*",
     "https://reddit.com/*",
     "http://*.reddit.com/*",
-    "https://*.reddit.com/*"
+    "https://*.reddit.com/*",
+    "https://www.youtube.com/oembed*"
   ],
   "content_scripts": [
     {
