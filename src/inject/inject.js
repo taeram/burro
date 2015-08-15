@@ -180,8 +180,8 @@ function ViewAllImages() {
             var url = $(link).attr('href');
             var media = new this.Media();
             if (media.initialize(url)) {
-                var thumbnail = $('<img src="' + media.item.getThumbnailUrl() + '" class="burro-thumbnail" />');
-                $(link).prepend(thumbnail);
+                var thumbnail = $('<a href="' + media.item.getDisplayUrl() + '" target="_blank"><img src="' + media.item.getThumbnailUrl() + '" class="burro-thumbnail" /></a>');
+                $(link).before(thumbnail);
 
                 $(thumbnail).on('mouseover',  function (e) {
                     var img = new Image();
@@ -269,9 +269,15 @@ function ViewAllImages() {
              * Construct the class
              */
             this.initialize = function(url) {
+                // Reject albums
+                if (url.match(/imgur.com\/a\//) || url.match(/imgur.com\/gallery\//)) {
+                    return false;
+                }
+
                 // Modify imgur photo albums with only a single photo to point directly to the image url
-                if (url.match(/imgur.com/) && !url.match(/i.imgur.com/) && !url.match(/imgur.com\/a\//)) {
-                    url = url.replace(/imgur.com/, 'i.imgur.com');
+                if (url.match(/imgur.com/)) {
+                    url = url.replace(/[\d\.]*imgur.com/, 'i.imgur.com')
+                             .replace(/\/new/, '');
                 }
 
                 // Modify imgur urls
@@ -296,7 +302,7 @@ function ViewAllImages() {
                     // Modify thumbnail images to point to the small, static thumbnail
                     if (!this.thumbUrl.match(/b\.jpg$/)) {
                         this.thumbUrl = this.thumbUrl.replace(/\.\w+$/, 'b.jpg');
-                    }  
+                    }
                     return true;
                 }
 
@@ -332,6 +338,15 @@ function ViewAllImages() {
              */
             this.getThumbnailUrl = function () {
                 return this.thumbUrl;
+            }
+
+            /**
+             * Get the full sized image url
+             *
+             * @return string
+             */
+            this.getDisplayUrl = function () {
+              return this.originalUrl;
             }
 
             /**
@@ -466,7 +481,15 @@ function ViewAllImages() {
                 if (this.source == SOURCE_YOUTUBE) {
                     return "https://i.ytimg.com/vi/" + this.id + "/hqdefault.jpg";
                 }
+            }
 
+            /**
+             * Get the display url
+             *
+             * @return string
+             */
+            this.getDisplayUrl = function () {
+              return this.url;
             }
 
             /**
