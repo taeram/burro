@@ -374,15 +374,9 @@ function ViewAllImages() {
              */
             this.isValid = function (url) {
                 return (
-                    // Direct link to an imgur url
-                    url.match(/i.imgur.com/) ||
-
-                    // Link to a single imgur image, not an imgur gallery
-                    url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  ||
-
-                    // Vimeo
-                    url.match(/vimeo.com/) ||
-
+                    url.match(/i.imgur.com/) || // Direct link to an imgur url
+                    url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  || // Link to a single imgur image, not an imgur gallery
+                    url.match(/vimeo.com/) || // Vimeo
                     url.match(/\.gif$/i) ||
                     url.match(/\.jpg$/i) ||
                     url.match(/\.png$/i)
@@ -518,11 +512,8 @@ function ViewAllImages() {
              */
             this.isValid = function (url) {
                 return (
-                    // Gfycat
-                    url.match(/gfycat.com/i) ||
-
-                    // Youtube
-                    url.match(/youtube.com/i) || url.match(/youtu.be/i)
+                    url.match(/gfycat.com/i) || // Gfycat
+                    url.match(/youtube.com/i) || url.match(/youtu.be/i) // Youtube
                 );
             }
 
