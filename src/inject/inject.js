@@ -178,6 +178,10 @@ function ViewAllImages() {
             }
 
             var url = $(link).attr('href');
+            if ($(link).parent().find('.domain').text().replace(/[\(\)]/g, '') == 'i.redd.it') {
+                url = $(link).parents('.thing').data('url');
+            }
+
             var media = new this.Media();
             if (media.initialize(url)) {
                 var thumbnail = $('<a href="' + media.item.getDisplayUrl() + '" target="_blank"><img src="' + media.item.getThumbnailUrl() + '" class="burro-thumbnail" /></a>');
@@ -274,10 +278,9 @@ function ViewAllImages() {
                     return false;
                 }
 
-                // Modify imgur photo albums with only a single photo to point directly to the image url
-                if (url.match(/imgur.com/)) {
-                    url = url.replace(/[\d\.]*imgur.com/, 'i.imgur.com')
-                             .replace(/\/new/, '');
+                // Modify imgur links for single photos to point directly to the image url
+                if (url.match(/\/imgur.com/)) {
+                    url = url.replace(/imgur.com/, 'i.imgur.com');
                 }
 
                 // Modify imgur urls
@@ -376,6 +379,8 @@ function ViewAllImages() {
                 return (
                     url.match(/i.imgur.com/) || // Direct link to an imgur url
                     url.match(/imgur.com/) && !url.match(/imgur.com\/a\//)  || // Link to a single imgur image, not an imgur gallery
+                    url.match(/i.redd.it/) ||
+                    url.match(/i.reddituploads.com/) ||
                     url.match(/vimeo.com/) || // Vimeo
                     url.match(/\.gif$/i) ||
                     url.match(/\.jpg$/i) ||
